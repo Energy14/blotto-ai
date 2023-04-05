@@ -1,6 +1,77 @@
 import flet as ft
+#bf1r = battletfield 1 red
+#bf2g = battletfield 2 green
+bf1r = 0
+bf2r = 0
+bf3r = 0
+bf1g = 0
+bf2g = 0
+bf3g = 0
+
+rt = 6
+gt = 6
+turn = 0
 
 def main(page: ft.Page):
+
+    global bf1g
+    global bf2g
+    global bf3g
+    global rt
+    global gt
+    def bf1click(e):
+        global bf1g
+        global gt
+        global turn
+        if(turn < 2):
+            bf1g=bf1g+1
+            gt=gt-1
+            turn=turn+1
+            bf1_text.value=str(bf1g)
+            g_text.value=str(gt)
+            page.update()
+            print("Bf1 is now " + str(bf1g))
+        else:
+            print("You can only move 2 troops this turn")
+        
+    def bf2click(e):
+        global bf2g
+        global gt
+        global turn
+        if(turn < 2):
+            bf2g=bf2g+1
+            gt=gt-1
+            turn=turn+1
+            bf2_text.value=str(bf2g)
+            g_text.value=str(gt)
+            page.update()
+            print("Bf2 is now " + str(bf2g))
+        else:
+            print("You can only move 2 troops this turn")
+    def bf3click(e):
+        global bf3g
+        global gt
+        global turn
+        if(turn < 2):
+            bf3g=bf3g+1
+            gt=gt-1
+            turn=turn+1
+            bf3_text.value=str(bf3g)
+            g_text.value=str(gt)
+            page.update()
+            print("Bf3 is now " + str(bf3g))
+        else:
+            print("You can only move 2 troops this turn")
+    def end_turn(e):
+        global turn
+        turn = 0
+        print("Turn ended")
+        
+
+    bf1_text = ft.Text(value=bf1g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+    bf2_text = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+    bf3_text = ft.Text(value=bf3g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+    g_text = ft.Text(value=gt, size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD)
 
     container_color = "#bfbfbf"
     page.window_width=800
@@ -30,7 +101,7 @@ def main(page: ft.Page):
                             controls=[
                             ft.Text("2", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
                             ft.Text("Battlefield 1",size=20,color='black'),
-                            ft.Text("0", size=25, color="#023020",weight=ft.FontWeight.BOLD),
+                            bf1_text
                         ]),   
                     width=206,
                     height=285,
@@ -38,7 +109,7 @@ def main(page: ft.Page):
                     padding=ft.padding.all(20),
                     bgcolor=container_color,
                     ink=True,
-                    on_click=lambda e: print("Clickity 1"),
+                    on_click=bf1click,
                 ),
                 ft.Container(
                     content=
@@ -47,7 +118,7 @@ def main(page: ft.Page):
                             controls=[
                             ft.Text("1", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
                             ft.Text("Battlefield 2",size=20,color='black'),
-                            ft.Text("1", size=25, color="#023020",weight=ft.FontWeight.BOLD),
+                            bf2_text
                         ]),   
                     width=206,
                     height=285,
@@ -55,7 +126,7 @@ def main(page: ft.Page):
                     padding=ft.padding.all(20),
                     bgcolor=container_color,
                     ink=True,
-                    on_click=lambda e: print("Clickity 2"),
+                    on_click=bf2click,
                 ),
                 ft.Container(
                     content=
@@ -64,7 +135,7 @@ def main(page: ft.Page):
                             controls=[
                             ft.Text("0", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
                             ft.Text("Battlefield 3",size=20,color='black'),
-                            ft.Text("0", size=25, color="#023020",weight=ft.FontWeight.BOLD),
+                            bf3_text,
                         ]),   
                     width=206,
                     height=285,
@@ -72,7 +143,7 @@ def main(page: ft.Page):
                     padding=ft.padding.all(20),
                     bgcolor=container_color,
                     ink=True,
-                    on_click=lambda e: print("Clickity 3"),
+                    on_click=bf3click,
                 )
             ]),
             ft.Row(
@@ -93,7 +164,7 @@ def main(page: ft.Page):
                 ),
                 ft.Container(
                     alignment=ft.alignment.center,
-                    content=ft.Text("5", size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                    content=g_text,
                     border_radius=90,
                     width=97,
                     height=97,
@@ -111,7 +182,7 @@ def main(page: ft.Page):
                         },
                         padding=ft.padding.only(30,20,30,20),
                     ),
-                    on_click=lambda e: print("Clickity End turn"),
+                    on_click=end_turn,
                 )
             ])
         ])
