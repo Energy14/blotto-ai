@@ -65,19 +65,23 @@ def main(page: ft.Page):
         if(turn!=2):
             print("Move 2 troops before ending turn")
             return 0
+        check_win()
+        turn = 0
+        print("Turn ended")
+        pc_turn()
+    def check_win():
         if(((bf1g>bf1r and bf2g>bf2r) or (bf1g>bf1r and bf3g>bf3r) or (bf2g>bf2r and bf3g>bf3r))and rt+gt==0):
             print("Human wins")
         elif(((bf1g<bf1r and bf2g<bf2r) or (bf1g<bf1r and bf3g<bf3r) or (bf2g<bf2r and bf3g<bf3r))and rt+gt==0):
             print("AI wins")
         elif(rt+gt==0):
             print("Draw")
-        turn = 0
-        print("Turn ended")
-        pc_turn()
+        
     
     def pc_turn():
         global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt
-        root = Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r,rt,gt])
+        h = 0
+        root = Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r,rt,gt,h])
         nodes = []
         # nodes 0-5 1st level
         # nodes 6-41 2nd level
@@ -108,40 +112,94 @@ def main(page: ft.Page):
                 x=0
                 y=2
             for n in nodes[j:]:
-                nodes.append(Node([n.name[0]+2,n.name[1],n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
-                nodes.append(Node([n.name[0],n.name[1]+2,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
-                nodes.append(Node([n.name[0],n.name[1],n.name[2]+2,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0]+2,n.name[1],n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
+                nodes.append(Node([n.name[0],n.name[1]+2,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
+                nodes.append(Node([n.name[0],n.name[1],n.name[2]+2,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
 
-                nodes.append(Node([n.name[0]+1,n.name[1]+1,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
-                nodes.append(Node([n.name[0]+1,n.name[1],n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
-                nodes.append(Node([n.name[0],n.name[1]+1,n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0]+1,n.name[1]+1,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
+                nodes.append(Node([n.name[0]+1,n.name[1],n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
+                nodes.append(Node([n.name[0],n.name[1]+1,n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x,h],parent=n))
                 i=i+1
                 if(i>b):
                     break
         
+        def h_function():
+            for n in nodes:
+                h=0.00
+                for i in range(3):
+                    if(n.name[i]>n.name[i+3]):
+                        h=h+1
+                n.name[8]=h
+            #for n in nodes[:6]:
+            #    if n.children is not None:
+            #        for n2 in n.children:
+            #            n.name[8]=n.name[8]+n2.name[8]
+            #            if n2.children is not None:
+            #                for n3 in n2.children:
+            #                    n.name[8]=n.name[8]+n3.name[8]
+            #                    if n3.children is not None:
+            #                        for n4 in n3.children:
+            #                            n.name[8]=n.name[8]+n4.name[8]
+        def best_move():
+            best_move = nodes[0]
+            for n in nodes[:6]:
+                if n.name[8]>best_move.name[8]:
+                    best_move = n
+            return best_move
+        def execute_move():
+            global bf1r, bf2r, bf3r, rt
+            bf1r = best_move().name[3]
+            bf2r = best_move().name[4]
+            bf3r = best_move().name[5]
+            rt = rt-2
+            bf1_text_r.value = str(bf1r)
+            bf2_text_r.value = str(bf2r)
+            bf3_text_r.value = str(bf3r)
+            r_text.value = str(rt)
+            page.update()
+            check_win()
+            print("AI moved troops")
+        #bf1g = 0
+        #bf2g = 1
+        #bf3g = 2
+        #bf1r = 3
+        #bf2r = 4
+        #bf3r = 5
+        #rt = 6
+        #gt = 7
+        #h = 8
         # add 2 to one of the battlefields
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+2,bf2r,bf3r,rt-2,gt],parent=root))
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+2,bf3r,rt-2,gt],parent=root))
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r+2,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+2,bf2r,bf3r,rt-2,gt,h],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+2,bf3r,rt-2,gt,h],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r+2,rt-2,gt,h],parent=root))
 
         # add 1 to two of the battlefields
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r+1,bf3r,rt-2,gt],parent=root))
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r,bf3r+1,rt-2,gt],parent=root))
-        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+1,bf3r+1,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r+1,bf3r,rt-2,gt,h],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r,bf3r+1,rt-2,gt,h],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+1,bf3r+1,rt-2,gt,h],parent=root))
         if(rt-2+gt==0):
             #this is the last turn
+            h_function()
             print("end reached")
-            return 0 # must return next move
+            best_move()
+            execute_move()
+            return 0
         generate_next_level()
         if(rt-2+gt-2==0):
+            h_function()
             print("end reached")
-            return 0 # must return next move
+            best_move()
+            execute_move()
+            return 0
         print("First tree: \n")
         print(RenderTree(root))
         generate_next_level()
         if(rt-4+gt-2==0):
             print("end reached")
-            return 0 # must return next move
+            h_function()
+            best_move()
+            execute_move()
+            return 0
         print("\n")
         print("Second tree: \n")
         print(RenderTree(root))
@@ -149,9 +207,16 @@ def main(page: ft.Page):
         generate_next_level()
         if(rt-4+gt-4==0):
             print("end reached")
-            return 0 # must return next move
+            h_function()
+            best_move()
+            execute_move()
+            return 0
         print("Third tree: \n")
         print(RenderTree(root))
+        h_function()
+        print(RenderTree(root))
+        print(best_move().name)
+        execute_move()
 
              
 
@@ -159,6 +224,7 @@ def main(page: ft.Page):
     bf2_text_g = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
     bf3_text_g = ft.Text(value=bf3g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
     g_text = ft.Text(value=gt, size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD)
+    r_text = ft.Text(value=rt, size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD)
 
     bf1_text_r = ft.Text(value=bf1r, size=25, color="#8b0000",weight=ft.FontWeight.BOLD)
     bf2_text_r = ft.Text(value=bf2r, size=25, color="#8b0000",weight=ft.FontWeight.BOLD)
@@ -176,7 +242,7 @@ def main(page: ft.Page):
         controls=[
             ft.Container(
                 alignment=ft.alignment.center,
-                content=ft.Text("3", size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                content=r_text,
                 border_radius=90,
                 width=97,
                 height=97,
