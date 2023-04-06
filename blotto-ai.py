@@ -1,4 +1,5 @@
 import flet as ft
+from anytree import Node, RenderTree
 #bf1r = battletfield 1 red
 #bf2g = battletfield 2 green
 bf1r = 0
@@ -8,17 +9,14 @@ bf1g = 0
 bf2g = 0
 bf3g = 0
 
-rt = 6
-gt = 6
+rt = 12
+gt = 12
 turn = 0
 
 def main(page: ft.Page):
 
-    global bf1g
-    global bf2g
-    global bf3g
-    global rt
-    global gt
+    global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt, turn
+    
     def bf1click(e):
         global bf1g
         global gt
@@ -27,7 +25,7 @@ def main(page: ft.Page):
             bf1g=bf1g+1
             gt=gt-1
             turn=turn+1
-            bf1_text.value=str(bf1g)
+            bf1_text_g.value=str(bf1g)
             g_text.value=str(gt)
             page.update()
             print("Bf1 is now " + str(bf1g))
@@ -42,7 +40,7 @@ def main(page: ft.Page):
             bf2g=bf2g+1
             gt=gt-1
             turn=turn+1
-            bf2_text.value=str(bf2g)
+            bf2_text_g.value=str(bf2g)
             g_text.value=str(gt)
             page.update()
             print("Bf2 is now " + str(bf2g))
@@ -56,7 +54,7 @@ def main(page: ft.Page):
             bf3g=bf3g+1
             gt=gt-1
             turn=turn+1
-            bf3_text.value=str(bf3g)
+            bf3_text_g.value=str(bf3g)
             g_text.value=str(gt)
             page.update()
             print("Bf3 is now " + str(bf3g))
@@ -64,14 +62,107 @@ def main(page: ft.Page):
             print("You can only move 2 troops this turn")
     def end_turn(e):
         global turn
+        if(turn!=2):
+            print("Move 2 troops before ending turn")
+            return 0
+        if(((bf1g>bf1r and bf2g>bf2r) or (bf1g>bf1r and bf3g>bf3r) or (bf2g>bf2r and bf3g>bf3r))and rt+gt==0):
+            print("Human wins")
+        elif(((bf1g<bf1r and bf2g<bf2r) or (bf1g<bf1r and bf3g<bf3r) or (bf2g<bf2r and bf3g<bf3r))and rt+gt==0):
+            print("AI wins")
+        elif(rt+gt==0):
+            print("Draw")
         turn = 0
         print("Turn ended")
-        
+        pc_turn()
+    
+    def pc_turn():
+        global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt
+        root = Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r,rt,gt])
+        nodes = []
+        # nodes 0-5 1st level
+        # nodes 6-41 2nd level
+        # nodes 42-257 3rd level
+        # nodes 258-1511 4th level
 
-    bf1_text = ft.Text(value=bf1g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
-    bf2_text = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
-    bf3_text = ft.Text(value=bf3g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+        def generate_next_level():
+            i=0
+            j=0
+            b=0
+            x=0
+            y=0
+            if(len(nodes)==6):
+                print("lentgh is 6")
+                b=5
+                x=0
+                y=2
+            elif(len(nodes)==42):
+                print("length is 42")
+                j=6
+                b=41
+                x=2
+                y=0
+            elif(len(nodes)==258):
+                print("length is 258")
+                j=42
+                b=257
+                x=0
+                y=2
+            for n in nodes[j:]:
+                nodes.append(Node([n.name[0]+2,n.name[1],n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0],n.name[1]+2,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0],n.name[1],n.name[2]+2,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+
+                nodes.append(Node([n.name[0]+1,n.name[1]+1,n.name[2],n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0]+1,n.name[1],n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                nodes.append(Node([n.name[0],n.name[1]+1,n.name[2]+1,n.name[3],n.name[4],n.name[5],n.name[6]-y,n.name[7]-x],parent=n))
+                i=i+1
+                if(i>b):
+                    break
+        
+        # add 2 to one of the battlefields
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+2,bf2r,bf3r,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+2,bf3r,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r,bf3r+2,rt-2,gt],parent=root))
+
+        # add 1 to two of the battlefields
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r+1,bf3r,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r+1,bf2r,bf3r+1,rt-2,gt],parent=root))
+        nodes.append(Node([bf1g,bf2g,bf3g,bf1r,bf2r+1,bf3r+1,rt-2,gt],parent=root))
+        if(rt-2+gt==0):
+            #this is the last turn
+            print("end reached")
+            return 0 # must return next move
+        generate_next_level()
+        if(rt-2+gt-2==0):
+            print("end reached")
+            return 0 # must return next move
+        print("First tree: \n")
+        print(RenderTree(root))
+        generate_next_level()
+        if(rt-4+gt-2==0):
+            print("end reached")
+            return 0 # must return next move
+        print("\n")
+        print("Second tree: \n")
+        print(RenderTree(root))
+        print("\n")
+        generate_next_level()
+        if(rt-4+gt-4==0):
+            print("end reached")
+            return 0 # must return next move
+        print("Third tree: \n")
+        print(RenderTree(root))
+
+             
+
+    bf1_text_g = ft.Text(value=bf1g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+    bf2_text_g = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
+    bf3_text_g = ft.Text(value=bf3g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
     g_text = ft.Text(value=gt, size=25, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD)
+
+    bf1_text_r = ft.Text(value=bf1r, size=25, color="#8b0000",weight=ft.FontWeight.BOLD)
+    bf2_text_r = ft.Text(value=bf2r, size=25, color="#8b0000",weight=ft.FontWeight.BOLD)
+    bf3_text_r = ft.Text(value=bf3r, size=25, color="#8b0000",weight=ft.FontWeight.BOLD)
 
     container_color = "#bfbfbf"
     page.window_width=800
@@ -99,9 +190,9 @@ def main(page: ft.Page):
                         ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                   alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
-                            ft.Text("2", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
+                            bf1_text_r,
                             ft.Text("Battlefield 1",size=20,color='black'),
-                            bf1_text
+                            bf1_text_g
                         ]),   
                     width=206,
                     height=285,
@@ -116,9 +207,9 @@ def main(page: ft.Page):
                         ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                   alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
-                            ft.Text("1", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
+                            bf2_text_r,
                             ft.Text("Battlefield 2",size=20,color='black'),
-                            bf2_text
+                            bf2_text_g
                         ]),   
                     width=206,
                     height=285,
@@ -133,9 +224,9 @@ def main(page: ft.Page):
                         ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                   alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
-                            ft.Text("0", size=25, color="#8b0000",weight=ft.FontWeight.BOLD),
+                            bf3_text_r,
                             ft.Text("Battlefield 3",size=20,color='black'),
-                            bf3_text,
+                            bf3_text_g,
                         ]),   
                     width=206,
                     height=285,
