@@ -9,8 +9,8 @@ bf1g = 0
 bf2g = 0
 bf3g = 0
 
-rt = 12
-gt = 12
+rt = 6
+gt = 6
 turn = 0
 
 def main(page: ft.Page):
@@ -129,7 +129,20 @@ def main(page: ft.Page):
                 for i in range(3):
                     if(n.name[i]>n.name[i+3]):
                         h=h+1
+                    elif n.name[i]==n.name[i+3]:
+                        h=h+0.1
                 n.name[8]=h
+            for n in nodes[:6]:
+                if n.children is not None:
+                    print("has children")
+                    for n2 in n.children:
+                        n.name[8]=n.name[8]+n2.name[8]*0.5
+                        if n2.children is not None:
+                            for n3 in n2.children:
+                                n.name[8]=n.name[8]+n3.name[8]*0.25
+                                if n3.children is not None:
+                                    for n4 in n3.children:
+                                        n.name[8]=n.name[8]+n4.name[8]*0.125
             #for n in nodes[:6]:
             #    if n.children is not None:
             #        for n2 in n.children:
@@ -157,8 +170,8 @@ def main(page: ft.Page):
             bf3_text_r.value = str(bf3r)
             r_text.value = str(rt)
             page.update()
-            check_win()
             print("AI moved troops")
+            check_win()
         #bf1g = 0
         #bf2g = 1
         #bf3g = 2
@@ -215,6 +228,10 @@ def main(page: ft.Page):
         print(RenderTree(root))
         h_function()
         print(RenderTree(root))
+        print("possible moves: ")
+        for n in nodes[:6]:
+            print(n.name)
+        print("best move: ")
         print(best_move().name)
         execute_move()
 
