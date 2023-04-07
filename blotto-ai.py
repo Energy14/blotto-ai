@@ -9,8 +9,8 @@ bf1g = 0
 bf2g = 0
 bf3g = 0
 
-rt = 6
-gt = 6
+rt = 10
+gt = 10
 turn = 0
 
 def main(page: ft.Page):
@@ -72,10 +72,25 @@ def main(page: ft.Page):
     def check_win():
         if(((bf1g>bf1r and bf2g>bf2r) or (bf1g>bf1r and bf3g>bf3r) or (bf2g>bf2r and bf3g>bf3r))and rt+gt==0):
             print("Human wins")
+            winner.value = "Human wins!"
+            game_page.visible = False
+            page.add(end_page)
+            end_page.visible = True
+            page.update()
         elif(((bf1g<bf1r and bf2g<bf2r) or (bf1g<bf1r and bf3g<bf3r) or (bf2g<bf2r and bf3g<bf3r))and rt+gt==0):
             print("AI wins")
+            winner.value = "AI wins!"
+            game_page.visible = False
+            page.add(end_page)
+            end_page.visible = True
+            page.update()
         elif(rt+gt==0):
             print("Draw")
+            winner.value = "Draw!"
+            game_page.visible = False
+            page.add(end_page)
+            end_page.visible = True
+            page.update()
         
     
     def pc_turn():
@@ -134,7 +149,6 @@ def main(page: ft.Page):
                 n.name[8]=h
             for n in nodes[:6]:
                 if n.children is not None:
-                    print("has children")
                     for n2 in n.children:
                         n.name[8]=n.name[8]+n2.name[8]*0.5
                         if n2.children is not None:
@@ -142,17 +156,7 @@ def main(page: ft.Page):
                                 n.name[8]=n.name[8]+n3.name[8]*0.25
                                 if n3.children is not None:
                                     for n4 in n3.children:
-                                        n.name[8]=n.name[8]+n4.name[8]*0.125
-            #for n in nodes[:6]:
-            #    if n.children is not None:
-            #        for n2 in n.children:
-            #            n.name[8]=n.name[8]+n2.name[8]
-            #            if n2.children is not None:
-            #                for n3 in n2.children:
-            #                    n.name[8]=n.name[8]+n3.name[8]
-            #                    if n3.children is not None:
-            #                        for n4 in n3.children:
-            #                            n.name[8]=n.name[8]+n4.name[8]
+                                        n.name[8]=n.name[8]+n4.name[8]*0.2
         def best_move():
             best_move = nodes[0]
             for n in nodes[:6]:
@@ -235,7 +239,40 @@ def main(page: ft.Page):
         print(best_move().name)
         execute_move()
 
-             
+    def human_start(e):
+        page.add(game_page)
+        start_page.visible = False
+        game_page.visible = True
+        page.update()
+
+    def ai_start(e):
+        pc_turn()
+        page.add(game_page)
+        start_page.visible = False
+        game_page.visible = True
+        page.update()
+    def reset_game(e):
+        global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt
+        bf1g = 0
+        bf2g = 0
+        bf3g = 0
+        bf1r = 0
+        bf2r = 0
+        bf3r = 0
+        rt = 10
+        gt = 10
+        bf1_text_g.value = str(bf1g)
+        bf2_text_g.value = str(bf2g)
+        bf3_text_g.value = str(bf3g)
+        bf1_text_r.value = str(bf1r)
+        bf2_text_r.value = str(bf2r)
+        bf3_text_r.value = str(bf3r)
+        r_text.value = str(rt)
+        g_text.value = str(gt)
+        end_page.visible = False
+        start_page.visible = True
+        page.update()
+        print("game reset")
 
     bf1_text_g = ft.Text(value=bf1g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
     bf2_text_g = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
@@ -253,113 +290,191 @@ def main(page: ft.Page):
     page.window_resizable = False
     page.window_title = "Blotto War"
 
-    page.add(
-        ft.Column(
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        controls=[
+    
+    game_page = ft.Column(
+    visible=False,
+    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    controls=[
+        ft.Container(
+            alignment=ft.alignment.center,
+            content=r_text,
+            border_radius=90,
+            width=97,
+            height=97,
+            bgcolor=ft.colors.RED_200,
+        ),
+        ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            controls=[
+            ft.Container(
+                content=
+                    ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                        bf1_text_r,
+                        ft.Text("Battlefield 1",size=20,color='black'),
+                        bf1_text_g
+                    ]),   
+                width=206,
+                height=285,
+                border_radius=20,
+                padding=ft.padding.all(20),
+                bgcolor=container_color,
+                ink=True,
+                on_click=bf1click,
+            ),
+            ft.Container(
+                content=
+                    ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                        bf2_text_r,
+                        ft.Text("Battlefield 2",size=20,color='black'),
+                        bf2_text_g
+                    ]),   
+                width=206,
+                height=285,
+                border_radius=20,
+                padding=ft.padding.all(20),
+                bgcolor=container_color,
+                ink=True,
+                on_click=bf2click,
+            ),
+            ft.Container(
+                content=
+                    ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                        bf3_text_r,
+                        ft.Text("Battlefield 3",size=20,color='black'),
+                        bf3_text_g,
+                    ]),   
+                width=206,
+                height=285,
+                border_radius=20,
+                padding=ft.padding.all(20),
+                bgcolor=container_color,
+                ink=True,
+                on_click=bf3click,
+            )
+        ]),
+        ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            controls=[
+            ft.ElevatedButton(
+                content=ft.Text("Reset", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                style=ft.ButtonStyle(
+                    color={
+                        ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                    },
+                    bgcolor={
+                        ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
+                        ft.MaterialState.HOVERED: ft.colors.RED_400,
+                    },
+                    padding=ft.padding.only(43,20,43,20),
+                )
+            ),
             ft.Container(
                 alignment=ft.alignment.center,
-                content=r_text,
+                content=g_text,
                 border_radius=90,
                 width=97,
                 height=97,
-                bgcolor=ft.colors.RED_200,
+                bgcolor=ft.colors.GREEN_200,
             ),
-            ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                controls=[
-                ft.Container(
-                    content=
-                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                  alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                            controls=[
-                            bf1_text_r,
-                            ft.Text("Battlefield 1",size=20,color='black'),
-                            bf1_text_g
-                        ]),   
-                    width=206,
-                    height=285,
-                    border_radius=20,
-                    padding=ft.padding.all(20),
-                    bgcolor=container_color,
-                    ink=True,
-                    on_click=bf1click,
+            ft.ElevatedButton(
+                content=ft.Text("End turn", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                style=ft.ButtonStyle(
+                    color={
+                        ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                    },
+                    bgcolor={
+                        ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
+                        ft.MaterialState.HOVERED: ft.colors.GREEN_500,
+                    },
+                    padding=ft.padding.only(30,20,30,20),
                 ),
-                ft.Container(
-                    content=
-                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                  alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                            controls=[
-                            bf2_text_r,
-                            ft.Text("Battlefield 2",size=20,color='black'),
-                            bf2_text_g
-                        ]),   
-                    width=206,
-                    height=285,
-                    border_radius=20,
-                    padding=ft.padding.all(20),
-                    bgcolor=container_color,
-                    ink=True,
-                    on_click=bf2click,
-                ),
-                ft.Container(
-                    content=
-                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                  alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                            controls=[
-                            bf3_text_r,
-                            ft.Text("Battlefield 3",size=20,color='black'),
-                            bf3_text_g,
-                        ]),   
-                    width=206,
-                    height=285,
-                    border_radius=20,
-                    padding=ft.padding.all(20),
-                    bgcolor=container_color,
-                    ink=True,
-                    on_click=bf3click,
-                )
-            ]),
-            ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                controls=[
-                ft.ElevatedButton(
-                    content=ft.Text("Reset", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
-                    style=ft.ButtonStyle(
-                        color={
-                            ft.MaterialState.DEFAULT: ft.colors.BLACK,
-                        },
-                        bgcolor={
-                            ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
-                            ft.MaterialState.HOVERED: ft.colors.RED_400,
-                        },
-                        padding=ft.padding.only(43,20,43,20),
-                    )
-                ),
-                ft.Container(
-                    alignment=ft.alignment.center,
-                    content=g_text,
-                    border_radius=90,
-                    width=97,
-                    height=97,
-                    bgcolor=ft.colors.GREEN_200,
-                ),
-                ft.ElevatedButton(
-                    content=ft.Text("End turn", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
-                    style=ft.ButtonStyle(
-                        color={
-                            ft.MaterialState.DEFAULT: ft.colors.BLACK,
-                        },
-                        bgcolor={
-                            ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
-                            ft.MaterialState.HOVERED: ft.colors.GREEN_500,
-                        },
-                        padding=ft.padding.only(30,20,30,20),
-                    ),
-                    on_click=end_turn,
-                )
-            ])
+                on_click=end_turn,
+            )
         ])
+    ])
+
+    def slider_changed(e):
+        global rt, gt
+        rt=int(e.control.value)
+        gt=int(e.control.value)
+        t.value = f"{int(e.control.value)} troops"
+        page.update()
+
+    t=ft.Text(value="10 troops",size=20,color='white')
+    start_page = ft.Column(
+        visible=True,
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            ft.Container(height=30),
+            ft.Text("How many troops should each side have?", size=30, color='white',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+            ft.Slider(value=10,min=2, max=60,divisions=29,label="{value}", on_change=slider_changed),
+            t,
+            ft.Container(height=60),
+            ft.Text("Who starts the game?", size=30, color='white',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+            ft.ElevatedButton(
+                height=70,
+                width=150,
+                content=ft.Text("Human", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                style=ft.ButtonStyle(
+                    color={
+                        ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                    },
+                    bgcolor={
+                        ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
+                        ft.MaterialState.HOVERED: ft.colors.GREEN_500,
+                    },
+                ),
+                on_click=human_start,
+            ),
+            ft.ElevatedButton(
+                height=70,
+                width=150,
+                content=ft.Text("AI", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                style=ft.ButtonStyle(
+                    color={
+                        ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                    },
+                    bgcolor={
+                        ft.MaterialState.DEFAULT: ft.colors.PURPLE_200,
+                        ft.MaterialState.HOVERED: ft.colors.GREEN_500,
+                    },
+                ),
+                on_click=ai_start,
+            )
+        ]
     )
+    winner = ft.Text(value="winner", size=60, color='white',weight=ft.FontWeight.BOLD)
+    end_page = ft.Column(
+        visible=False,
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            ft.Container(height=130,alignment=ft.alignment.center),
+            winner,
+            ft.ElevatedButton(
+                height=70,
+                width=150,
+                content=ft.Text("New Game", size=20, color='black',weight=ft.FontWeight.BOLD),
+                style=ft.ButtonStyle(
+                    color={
+                        ft.MaterialState.DEFAULT: ft.colors.BLACK,
+                    },
+                    bgcolor={
+                        ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
+                        ft.MaterialState.HOVERED: ft.colors.GREEN_500,
+                    },
+                ),
+                on_click=reset_game,
+            ),
+        ]
+    )
+    page.add(start_page)
 
 ft.app(target=main)
