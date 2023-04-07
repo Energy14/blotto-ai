@@ -141,11 +141,42 @@ def main(page: ft.Page):
         def h_function():
             for n in nodes:
                 h=0.00
-                for i in range(3):
-                    if(n.name[i]>n.name[i+3]):
-                        h=h+1
-                    elif n.name[i]==n.name[i+3]:
-                        h=h+0.1
+                d1 = n.name[3]-n.name[1]
+                d2 = n.name[4]-n.name[2]
+                d3 = n.name[5]-n.name[3]
+                #if(d1>0):
+                if(d1>0):
+                    h=h+0.1
+                if(d2>0):
+                    h=h+0.1
+                if(d3>0):
+                    h=h+0.1
+                if(d1>0 and d2>0):
+                    h=h+1.5
+                if(d1>0 and d3>0):
+                    h=h+1.5
+                if(d2>0 and d3>0):
+                    h=h+1.5
+                if(d1<0 and d2<0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h-2
+                elif(d1>0 and d2>0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h+3
+                if(d2<0 and d3<0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h-2
+                elif(d2>0 and d3>0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h+3
+                if(d1<0 and d3<0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h-2
+                elif(d1>0 and d3>0 and n.name[6]<=0 and n.name[7]<=0):
+                    h=h+3
+                if(d1!=0 and d2 !=0 and d3!=0 and h>0):
+                    h=h/d1
+                    h=h/d2
+                    h=h/d3
+                #elif(d1!=0 and d2 !=0 and d3!=0 and h<0):
+                #    h=h*d1
+                #    h=h*d2
+                #    h=h*d3
                 n.name[8]=h
             for n in nodes[:6]:
                 if n.children is not None:
@@ -153,15 +184,20 @@ def main(page: ft.Page):
                         n.name[8]=n.name[8]+n2.name[8]*0.5
                         if n2.children is not None:
                             for n3 in n2.children:
-                                n.name[8]=n.name[8]+n3.name[8]*0.25
+                                n.name[8]=n.name[8]+n3.name[8]*0.5
                                 if n3.children is not None:
                                     for n4 in n3.children:
-                                        n.name[8]=n.name[8]+n4.name[8]*0.2
+                                        n.name[8]=n.name[8]+n4.name[8]*0.5
         def best_move():
             best_move = nodes[0]
             for n in nodes[:6]:
                 if n.name[8]>best_move.name[8]:
                     best_move = n
+            print("possible moves: ")
+            for n in nodes[:6]:
+                print(n.name)
+            print("best move: ")
+            print(best_move.name)
             return best_move
         def execute_move():
             global bf1r, bf2r, bf3r, rt
@@ -232,20 +268,20 @@ def main(page: ft.Page):
         print(RenderTree(root))
         h_function()
         print(RenderTree(root))
-        print("possible moves: ")
-        for n in nodes[:6]:
-            print(n.name)
-        print("best move: ")
-        print(best_move().name)
+        
         execute_move()
 
     def human_start(e):
+        g_text.value = str(gt)
+        r_text.value = str(rt)
         page.add(game_page)
         start_page.visible = False
         game_page.visible = True
         page.update()
 
     def ai_start(e):
+        g_text.value = str(gt)
+        r_text.value = str(rt)
         pc_turn()
         page.add(game_page)
         start_page.visible = False
