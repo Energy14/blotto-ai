@@ -288,13 +288,14 @@ def main(page: ft.Page):
         game_page.visible = True
         page.update()
     def reset_game(e):
-        global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt
+        global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt, turn
         bf1g = 0
         bf2g = 0
         bf3g = 0
         bf1r = 0
         bf2r = 0
         bf3r = 0
+        turn = 0
         rt = 10
         gt = 10
         bf1_text_g.value = str(bf1g)
@@ -309,6 +310,29 @@ def main(page: ft.Page):
         start_page.visible = True
         page.update()
         print("game reset")
+    def restart_game(e):
+        global bf1g, bf2g, bf3g, bf1r, bf2r, bf3r, rt, gt, turn
+        bf1g = 0
+        bf2g = 0
+        bf3g = 0
+        bf1r = 0
+        bf2r = 0
+        bf3r = 0
+        turn = 0
+        rt = 10
+        gt = 10
+        bf1_text_g.value = str(bf1g)
+        bf2_text_g.value = str(bf2g)
+        bf3_text_g.value = str(bf3g)
+        bf1_text_r.value = str(bf1r)
+        bf2_text_r.value = str(bf2r)
+        bf3_text_r.value = str(bf3r)
+        r_text.value = str(rt)
+        g_text.value = str(gt)
+        game_page.visible = False
+        start_page.visible = True
+        page.update()
+        print("game restarted")
 
     bf1_text_g = ft.Text(value=bf1g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
     bf2_text_g = ft.Text(value=bf2g, size=25, color="#023020",weight=ft.FontWeight.BOLD)
@@ -398,7 +422,7 @@ def main(page: ft.Page):
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
             controls=[
             ft.ElevatedButton(
-                content=ft.Text("Reset", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
+                content=ft.Text("Restart", size=20, color='black',text_align=ft.TextAlign.CENTER,weight=ft.FontWeight.BOLD),
                 style=ft.ButtonStyle(
                     color={
                         ft.MaterialState.DEFAULT: ft.colors.BLACK,
@@ -407,8 +431,9 @@ def main(page: ft.Page):
                         ft.MaterialState.DEFAULT: ft.colors.BLUE_200,
                         ft.MaterialState.HOVERED: ft.colors.RED_400,
                     },
-                    padding=ft.padding.only(43,20,43,20),
-                )
+                    padding=ft.padding.only(40,20,40,20),
+                ),
+                on_click=restart_game,
             ),
             ft.Container(
                 alignment=ft.alignment.center,
