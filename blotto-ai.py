@@ -184,10 +184,10 @@ def main(page: ft.Page):
                         n.name[8]=n.name[8]+n2.name[8]*0.5
                         if n2.children is not None:
                             for n3 in n2.children:
-                                n.name[8]=n.name[8]+n3.name[8]*0.5
+                                n.name[8]=n.name[8]+n3.name[8]*0.3
                                 if n3.children is not None:
                                     for n4 in n3.children:
-                                        n.name[8]=n.name[8]+n4.name[8]*0.5
+                                        n.name[8]=n.name[8]+n4.name[8]*0.2
         def best_move():
             best_move = nodes[0]
             for n in nodes[:6]:
